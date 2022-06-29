@@ -1,99 +1,19 @@
 import React from "react";
 import styled from "styled-components";
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-);
+import { LineChart, Line, Tooltip, Area, AreaChart } from "recharts";
 
-function ExpenceCards({ color, sales_data }) {
-    const options = {
-        maintainAspectRatio: false,
-        responsive: true,
-
-        plugins: {
-            legend: {
-                display: false,
-            },
-            drawBorder: false,
-            label: {
-                display: false,
-            },
-            title: {
-                display: false,
-                text: "",
-            },
-        },
-        scales: {
-            x: {
-                stacked: true,
-                ticks: {
-                    display: false,
-                },
-                grid: {
-                    display: false,
-                    drawBorder: false,
-                },
-            },
-            y: {
-                stacked: true,
-                ticks: {
-                    display: false,
-                },
-
-                grid: {
-                    display: false,
-                    drawBorder: false,
-                },
-            },
-        },
-    };
-
-    const labels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-    const data = {
-        labels,
-        datasets: [
-            {
-                label: false,
-                data: sales_data,
-                // fill: true,
-                backgroundColor: color,
-                borderColor: color,
-                backgroundColor: color,
-                tension: 0.4,
-                pointRadius: 1,
-                borderRadius: 0,
-                barThickness: 0.5,
-            },
-        ],
-    };
+function ExpenceCards({ data }) {
     return (
         <Container>
             <Top>
-                <Icon color={color}>
+                <Icon color={data.color}>
                     <span>
                         {" "}
                         <i className="fa-solid fa-dollar-sign"></i>
                     </span>
                 </Icon>
                 <Content>
-                    <LabelTitle>Revenue</LabelTitle>
+                    <LabelTitle>{data.name}</LabelTitle>
                     <LabelDescription>
                         <span>
                             <i className="fa-solid fa-arrow-up"></i> 15%
@@ -103,9 +23,59 @@ function ExpenceCards({ color, sales_data }) {
                 </Content>
             </Top>
             <Grafh>
-                <Line options={options} data={data} />
+                {
+                    <AreaChart width={200} height={60} data={data.sales_data}>
+                        <defs>
+                            <linearGradient
+                                id="colorUv"
+                                x1="0"
+                                y1="0"
+                                x2="0"
+                                y2="1"
+                            >
+                                <stop
+                                    offset="5%"
+                                    stopColor={data.gradient}
+                                    stopOpacity={0.2}
+                                />
+                                <stop
+                                    offset="95%"
+                                    stopColor={data.gradient}
+                                    stopOpacity={0}
+                                />
+                            </linearGradient>
+                            <linearGradient
+                                id="colorPv"
+                                x1="0"
+                                y1="0"
+                                x2="0"
+                                y2="1"
+                            >
+                                <stop
+                                    offset="5%"
+                                    stopColor={data.gradient}
+                                    stopOpacity={0.5}
+                                />
+                                <stop
+                                    offset="95%"
+                                    stopColor={data.gradient}
+                                    stopOpacity={0}
+                                />
+                            </linearGradient>
+                        </defs>
+                        <Area
+                            type="monotone"
+                            dataKey="uv"
+                            stroke={data.color}
+                            fillOpacity={1}
+                            fill="url(#colorUv)"
+                        />
+
+                        {/* <Tooltip /> */}
+                    </AreaChart>
+                }
             </Grafh>
-            <Amount></Amount>
+            <Amount>{data.sales_numbers.toLocaleString()}</Amount>
         </Container>
     );
 }
@@ -116,6 +86,7 @@ const Container = styled.div`
     background-color: #fff;
     padding: 15px;
     border-radius: 10px;
+    height: 100%;
 `;
 const Top = styled.div`
     display: flex;
@@ -125,7 +96,10 @@ const Grafh = styled.div`
     max-height: 60px;
     /* max-width: 200px; */
 `;
-const Amount = styled.p``;
+const Amount = styled.p`
+    font-size: 18px;
+    font-weight: 700;
+`;
 const Icon = styled.span`
     display: flex;
     justify-content: center;
@@ -155,6 +129,8 @@ const Icon = styled.span`
 const Content = styled.div``;
 const LabelTitle = styled.h4`
     margin-bottom: 6px;
+    font-size: 16px;
+    font-weight: 600;
 `;
 const LabelDescription = styled.p`
     font-size: 12px;
